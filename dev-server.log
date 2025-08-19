@@ -1,0 +1,9 @@
+
+> dev
+> remix vite:dev --port 3001
+
+  ➜  Local:   http://localhost:3001/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+4:36:28 PM [vite] page reload app/routes/_auth.signup.tsx
+4:36:29 PM [vite] hmr update /app/routes/_index.tsx, /app/styles/tailwind.css?direct

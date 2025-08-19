@@ -1,0 +1,246 @@
+# Supabase Setup for AI Vibecoding Forum
+
+This directory contains the Supabase configuration and database migrations for the AI vibecoding forum built on Remix + Supabase + Netlify.
+
+## 📁 Directory Structure
+
+```
+supabase/
+├── migrations/          # Database migration files
+├── seed.csv            # Original member seed data
+└── README.md           # This file
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- [Docker Desktop](https://docs.docker.com/desktop/) installed and running
+- [Supabase CLI](https://supabase.com/docs/guides/cli/getting-started) installed
+- Node.js and npm installed
+
+### Local Development
+
+1. **Start local Supabase environment:**
+   ```bash
+   supabase start
+   ```
+   This will:
+   - Download and start all Supabase Docker containers
+   - Apply all migrations automatically
+   - Create sample forum data
+   - Provide local development URLs
+
+2. **View your local database:**
+   - **Supabase Studio**: http://127.0.0.1:54323
+   - **API URL**: http://127.0.0.1:54321
+   - **Database URL**: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+
+3. **Stop local environment:**
+   ```bash
+   supabase stop
+   ```
+
+### Remote Database Management
+
+1. **Login to Supabase:**
+   ```bash
+   supabase login
+   ```
+
+2. **Link to remote project:**
+   ```bash
+   supabase link
+   ```
+   Follow the prompts to select your project.
+
+3. **Push migrations to remote:**
+   ```bash
+   supabase db push
+   ```
+
+4. **Pull latest schema from remote:**
+   ```bash
+   supabase db pull
+   ```
+
+## 📊 Database Schema
+
+### Forum Tables Created
+
+| Table | Description |
+|-------|-------------|
+| `categories` | Forum categories (AI Tools, Code Help, etc.) |
+| `tags` | Content tags (JavaScript, Python, AI, etc.) |
+| `posts` | Forum posts with guest support |
+| `comments` | Threaded comments system |
+| `post_tags` | Many-to-many relationship for post tagging |
+| `votes` | Upvote/downvote system |
+| `user_profiles` | Extended user profiles with reputation |
+| `reports` | Content moderation system |
+
+### Key Features
+
+- ✅ **Guest Posting**: Non-authenticated users can post and comment
+- ✅ **Threaded Comments**: Nested comment discussions
+- ✅ **Voting System**: Upvote/downvote with automatic counting
+- ✅ **Full-text Search**: Search posts by content
+- ✅ **Row Level Security**: Proper data access control
+- ✅ **Automatic Triggers**: Vote counting, user stats, timestamps
+- ✅ **Sample Data**: Realistic forum content for testing
+
+## 🛠️ Migration Management
+
+### View Migration Status
+```bash
+# Local migrations
+supabase migration list --local
+
+# Remote migrations
+supabase migration list --linked
+```
+
+### Create New Migration
+```bash
+supabase migration new your_migration_name
+```
+
+### Reset Local Database
+```bash
+supabase db reset
+```
+This reapplies all migrations from scratch.
+
+## 🔧 Environment Configuration
+
+### Local Development Keys
+When running locally, use these credentials:
+
+```env
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+```
+
+### Remote Production Keys
+Get these from your Supabase Dashboard → Settings → API:
+
+```env
+SUPABASE_URL=https://your-project-ref.supabase.co
+SUPABASE_ANON_KEY=your-anon-key
+```
+
+## 📝 Sample Data
+
+The database includes sample forum data:
+
+### Categories (6 default)
+- 🤖 AI Tools & Prompts
+- 🔍 Code Review & Help  
+- 🚀 Project Showcases
+- 📚 Learning Resources
+- 💬 Industry Discussions
+- 🏆 Challenges & Competitions
+
+### Tags (18 popular)
+JavaScript, Python, React, AI, Machine Learning, OpenAI, Claude, etc.
+
+### Sample Posts (3 realistic)
+- AI Code Review Tools guide
+- React State Management help request
+- AI Todo App project showcase
+
+## 🔍 Database Inspection
+
+### Using Supabase Studio
+1. Navigate to http://127.0.0.1:54323 (local) or your Supabase Dashboard (remote)
+2. Go to Table Editor to view data
+3. Use SQL Editor for custom queries
+
+### Using psql (if available)
+```bash
+# Connect to local database
+psql postgresql://postgres:postgres@127.0.0.1:54322/postgres
+
+# Connect to remote database
+psql -h db.your-ref.supabase.co -p 5432 -d postgres -U postgres
+```
+
+### Sample Queries
+```sql
+-- View all categories
+SELECT name, description, post_count FROM categories;
+
+-- View posts with categories
+SELECT p.title, c.name as category, p.votes_count, p.created_at 
+FROM posts p 
+JOIN categories c ON p.category_id = c.id 
+ORDER BY p.created_at DESC;
+
+-- View threaded comments
+SELECT c.content, c.author_name, c.created_at, c.parent_id 
+FROM comments c 
+WHERE c.post_id = 'post-uuid-here' 
+ORDER BY c.created_at ASC;
+```
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+1. **Docker not running**
+   ```
+   Error: Cannot connect to the Docker daemon
+   ```
+   **Solution**: Start Docker Desktop
+
+2. **Port conflicts**
+   ```
+   Error: Port 54321 is already in use
+   ```
+   **Solution**: Stop other Supabase instances or change ports in `supabase/config.toml`
+
+3. **Migration conflicts**
+   ```
+   Error: relation "table_name" already exists
+   ```
+   **Solution**: Check migration status and resolve conflicts manually
+
+4. **Connection timeouts**
+   ```
+   Error: hostname resolving error
+   ```
+   **Solution**: Check internet connection and verify project credentials
+
+### Reset Everything
+If you need to start fresh:
+
+```bash
+# Stop all containers
+supabase stop
+
+# Remove all data
+docker system prune -f
+
+# Start fresh
+supabase start
+```
+
+## 📚 Additional Resources
+
+- [Supabase Documentation](https://supabase.com/docs)
+- [Supabase CLI Reference](https://supabase.com/docs/reference/cli)
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Row Level Security Guide](https://supabase.com/docs/guides/auth/row-level-security)
+
+## 🤝 Contributing
+
+When adding new features:
+
+1. Create a new migration: `supabase migration new feature_name`
+2. Test locally: `supabase db reset`
+3. Push to remote: `supabase db push`
+4. Update this README if needed
+
+---
+
+**Note**: This setup supports both local development with Docker and remote production deployment. Always test migrations locally before pushing to production.
+
