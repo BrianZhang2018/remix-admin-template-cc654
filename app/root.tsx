@@ -7,6 +7,8 @@ import {
   useLoaderData,
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
+import { useEffect } from "react";
+import './i18n';
 
 import styles from "~/styles/tailwind.css?url";
 

@@ -183,6 +183,7 @@ export interface CommentThreadProps {
   maxLevel?: number;
   currentUserEmail?: string;
   setCurrentUserEmail?: (email: string) => void;
+  isAuthenticated?: boolean;
 }
 
 export interface TagSelectorProps {

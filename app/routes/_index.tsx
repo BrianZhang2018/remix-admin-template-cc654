@@ -1,10 +1,13 @@
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, Link, Form } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 
 import Logo from "~/components/Logo";
 import PostCard from "~/components/forum/PostCard";
+import LanguageSwitcher from "~/components/LanguageSwitcher";
 import { getSupabaseClient } from "~/utils/getSupabaseClient";
 import { getOptionalUser } from "~/utils/auth.server";
+import { getTranslatedCategoryName, getTranslatedCategoryDescription } from "~/utils/categoryTranslations";
 import type { Post, Category } from "~/types/forum";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -50,13 +53,14 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "AI Vibecoding Forum - Share AI tools, get code help, showcase projects" },
+    { title: "AI VibeCoding Forum - Share AI tools, get code help, showcase projects" },
     { name: "description", content: "A modern AI-focused coding forum where developers share AI tools, get code help, showcase projects, and discuss the latest in AI and programming." },
   ];
 };
 
 export default function ForumHomepage() {
   const { posts, categories, user } = useLoaderData<typeof loader>();
+  const { t } = useTranslation();
 
   return (
     <>
@@ -66,6 +70,7 @@ export default function ForumHomepage() {
           <div className="flex items-center justify-between mb-6">
             <Logo />
             <div className="flex items-center gap-4">
+              <LanguageSwitcher />
               {user ? (
                 // Logged in user navigation
                 <>
@@ -73,20 +78,20 @@ export default function ForumHomepage() {
                     to="/dashboard"
                     className="px-4 py-2 text-sm font-medium text-cyan-100 hover:text-white transition-colors"
                   >
-                    Dashboard
+                    {t('navigation.dashboard')}
                   </Link>
                   <Link
                     to="/posts/new"
                     className="px-4 py-2 text-sm font-medium bg-white text-cyan-600 rounded-md hover:bg-gray-50 transition-colors"
                   >
-                    Create Post
+                    {t('navigation.createPost')}
                   </Link>
                   <Form action="/logout" method="POST" className="inline">
                     <button
                       type="submit"
                       className="px-4 py-2 text-sm font-medium text-cyan-100 hover:text-white transition-colors"
                     >
-                      Logout
+                      {t('navigation.logout')}
                     </button>
                   </Form>
                 </>
@@ -97,13 +102,13 @@ export default function ForumHomepage() {
                     to="/login"
                     className="px-4 py-2 text-sm font-medium text-cyan-100 hover:text-white transition-colors"
                   >
-                    Login
+                    {t('navigation.login')}
                   </Link>
                   <Link
                     to="/signup"
                     className="px-4 py-2 text-sm font-medium bg-white text-cyan-600 rounded-md hover:bg-gray-50 transition-colors"
                   >
-                    Sign Up
+                    {t('navigation.signup')}
                   </Link>
                 </>
               )}
@@ -111,24 +116,24 @@ export default function ForumHomepage() {
           </div>
           
           <div className="text-center">
-            <h1 className="text-4xl font-bold mb-4">AI Vibecoding Forum</h1>
+            <h1 className="text-4xl font-bold mb-4">{t('homepage.title')}</h1>
             <p className="text-xl text-cyan-100 mb-6 max-w-2xl mx-auto">
-              Share AI tools, get code help, showcase projects, and discuss the latest in AI and programming
+              {t('homepage.description')}
             </p>
             
             {/* Quick stats */}
             <div className="flex justify-center gap-8 text-sm">
               <div>
                 <span className="font-semibold">{posts.length}</span>
-                <span className="text-cyan-100 ml-1">Recent Posts</span>
+                <span className="text-cyan-100 ml-1">{t('homepage.quickStats.recentPosts')}</span>
               </div>
               <div>
                 <span className="font-semibold">{categories.filter(category => category.slug !== 'vibecoding-projects').length}</span>
-                <span className="text-cyan-100 ml-1">Categories</span>
+                <span className="text-cyan-100 ml-1">{t('homepage.quickStats.categories')}</span>
               </div>
               <div>
-                <span className="font-semibold">Guest</span>
-                <span className="text-cyan-100 ml-1">Posting Enabled</span>
+                <span className="font-semibold">{t('homepage.quickStats.guestPosting')}</span>
+                <span className="text-cyan-100 ml-1">{t('homepage.quickStats.postingEnabled')}</span>
               </div>
             </div>
           </div>
@@ -138,7 +143,7 @@ export default function ForumHomepage() {
       <main className="max-w-7xl mx-auto px-4 py-8">
         {/* Categories Grid */}
         <section className="mb-12">
-          <h2 className="text-2xl font-semibold text-slate-900 mb-6">Forum Categories</h2>
+          <h2 className="text-2xl font-semibold text-slate-900 mb-6">{t('forum.categories')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {categories.filter(category => category.slug !== 'vibecoding-projects').map((category) => (
               <Link
@@ -148,9 +153,9 @@ export default function ForumHomepage() {
               >
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-2xl">{category.icon}</span>
-                  <h3 className="font-semibold text-slate-900">{category.name}</h3>
+                  <h3 className="font-semibold text-slate-900">{getTranslatedCategoryName(category.slug, t)}</h3>
                 </div>
-                <p className="text-sm text-slate-600 mb-3">{category.description}</p>
+                <p className="text-sm text-slate-600 mb-3">{getTranslatedCategoryDescription(category.slug, t)}</p>
                 <div className="flex items-center justify-between text-sm">
                   <span 
                     className="font-medium"
@@ -168,12 +173,12 @@ export default function ForumHomepage() {
         {/* Recent Posts */}
         <section>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-slate-900">Recent Posts</h2>
+            <h2 className="text-2xl font-semibold text-slate-900">{t('forum.recentPosts')}</h2>
             <Link
               to="/posts"
               className="text-cyan-600 hover:text-cyan-700 font-medium"
             >
-              View all posts →
+              {t('forum.browseAll')} →
             </Link>
           </div>
           
@@ -228,7 +233,7 @@ export default function ForumHomepage() {
                       to={`/categories/${category.slug}`}
                       className="text-slate-600 hover:text-cyan-600 transition-colors"
                     >
-                      {category.name}
+                      {getTranslatedCategoryName(category.slug, t)}
                     </Link>
                   </li>
                 ))}

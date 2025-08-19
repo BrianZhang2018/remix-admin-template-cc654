@@ -54,7 +54,7 @@ export const meta: MetaFunction<typeof loader> = ({ data }) => {
   }
 
   return [
-    { title: `${data.category.name} - AI Vibecoding Forum` },
+    { title: `${data.category.name} - AI VibCcoding Forum` },
     { name: "description", content: data.category.description },
   ];
 };

@@ -30,7 +30,7 @@ type Achievement = {
 export const meta: MetaFunction = () => {
   return [
     {
-      title: "Dashboard | AI Vibecoding Forum",
+      title: "Dashboard | AI VibeCoding Forum",
     },
   ];
 };

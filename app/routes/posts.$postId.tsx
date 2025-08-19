@@ -649,6 +649,7 @@ export default function PostDetail() {
             onVote={handleCommentVote}
             currentUserEmail={user?.email || ''}
             setCurrentUserEmail={() => {}} // No longer needed for authenticated users
+            isAuthenticated={!!user}
           />
         ) : (
           <div className="text-center py-8 bg-white rounded-xl shadow-md border border-slate-200">
@@ -659,9 +660,29 @@ export default function PostDetail() {
             </div>
             <h3 className="text-lg font-medium text-slate-900 mb-2">No comments yet</h3>
             <p className="text-slate-600 mb-4">Be the first to share your thoughts!</p>
-            <Button onClick={() => setShowReplyForm(true)}>
-              Add First Comment
-            </Button>
+            {user ? (
+              <Button onClick={() => setShowReplyForm(true)}>
+                Add First Comment
+              </Button>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-sm text-slate-600">Sign in to join the discussion</p>
+                <div className="flex items-center justify-center gap-3">
+                  <Link 
+                    to="/login" 
+                    className="inline-flex items-center px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 transition-colors"
+                  >
+                    Sign In to Comment
+                  </Link>
+                  <Link 
+                    to="/signup" 
+                    className="inline-flex items-center px-4 py-2 border border-slate-300 text-slate-700 rounded-lg hover:bg-slate-50 transition-colors"
+                  >
+                    Create Account
+                  </Link>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </section>

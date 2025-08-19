@@ -120,7 +120,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "Create New Post - AI Vibecoding Forum" },
+    { title: "Create New Post - AI VibeCoding Forum" },
     { name: "description", content: "Share your AI projects, get help with code, or start a discussion in our vibecoding community." },
   ];
 };

@@ -1,7 +1,9 @@
 import { Link } from "@remix-run/react";
+import { useTranslation } from "react-i18next";
 import type { PostCardProps } from "~/types/forum";
 import { formatDate } from "~/utils/formatDate";
 import { getInitials } from "~/utils/getInitials";
+import { getTranslatedCategoryName } from "~/utils/categoryTranslations";
 import VoteButtons from "./VoteButtons";
 
 export default function PostCard({ 
@@ -11,6 +13,7 @@ export default function PostCard({
   showExcerpt = true,
   compact = false 
 }: PostCardProps) {
+  const { t } = useTranslation();
   const handleVote = async (voteType: 'up' | 'down') => {
     // TODO: Implement voting logic
     console.log(`Voting ${voteType} on post ${post.id}`);
@@ -58,7 +61,7 @@ export default function PostCard({
                     }}
                   >
                     <span>{post.category.icon}</span>
-                    {post.category.name}
+                    {getTranslatedCategoryName(post.category.slug, t)}
                   </Link>
                 )}
               </div>

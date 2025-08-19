@@ -1,10 +1,12 @@
 import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData, useSearchParams, Link } from "@remix-run/react";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import PostCard from "~/components/forum/PostCard";
 import Button from "~/components/Button";
 import { getSupabaseClient } from "~/utils/getSupabaseClient";
+import { getTranslatedCategoryName } from "~/utils/categoryTranslations";
 import type { Post, Category, Tag, PostFilters, PostSorting } from "~/types/forum";
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -108,6 +110,7 @@ export default function PostsListing() {
   const { posts, categories, tags, pagination, filters } = useLoaderData<typeof loader>();
   const [searchParams, setSearchParams] = useSearchParams();
   const [localSearch, setLocalSearch] = useState(filters.search || "");
+  const { t } = useTranslation();
 
   const updateFilter = (key: string, value: string | null) => {
     const newSearchParams = new URLSearchParams(searchParams);
@@ -236,20 +239,20 @@ export default function PostsListing() {
                       : "hover:bg-slate-50"
                   }`}
                 >
-                  All Categories
+{t('homepage.allCategories')}
                 </button>
-                {categories.filter(category => category.slug !== 'vibecoding-projects').map((category) => (
+                                {categories.filter(category => category.slug !== 'vibecoding-projects').map((category) => (
                   <button
                     key={category.id}
                     onClick={() => updateFilter("category", category.slug)}
                     className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors flex items-center gap-2 ${
-                      filters.category === category.slug
-                        ? "bg-cyan-100 text-cyan-800"
+                      filters.category === category.slug 
+                        ? "bg-cyan-100 text-cyan-800" 
                         : "hover:bg-slate-50"
                     }`}
                   >
                     <span>{category.icon}</span>
-                    <span className="flex-1">{category.name}</span>
+                    <span className="flex-1">{getTranslatedCategoryName(category.slug, t)}</span>
                     <span className="text-xs text-slate-500">{category.post_count}</span>
                   </button>
                 ))}

@@ -7,7 +7,7 @@ import { getInitials } from "~/utils/getInitials";
 export const meta: MetaFunction = () => {
   return [
     {
-      title: "Profile | AI Vibecoding Forum",
+      title: "Profile | AI VibeCoding Forum",
     },
   ];
 };

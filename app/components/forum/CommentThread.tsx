@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Form, useNavigation, useActionData } from "@remix-run/react";
+import { Form, useNavigation, useActionData, Link } from "@remix-run/react";
 import type { CommentThreadProps } from "~/types/forum";
 import { formatDate } from "~/utils/formatDate";
 import { getInitials } from "~/utils/getInitials";
@@ -15,7 +15,8 @@ export default function CommentThread({
   level = 0,
   maxLevel = 5,
   currentUserEmail = '',
-  setCurrentUserEmail
+  setCurrentUserEmail,
+  isAuthenticated = false
 }: CommentThreadProps) {
   const [replyToId, setReplyToId] = useState<string | null>(null);
   const [editCommentId, setEditCommentId] = useState<string | null>(null);
@@ -116,15 +117,24 @@ export default function CommentThread({
               {/* Comment Actions */}
               <div className="flex items-center gap-4">
                 {canNest && onReply && (
-                  <button
-                    onClick={() => setReplyToId(replyToId === comment.id ? null : comment.id)}
-                    className="text-sm text-slate-500 hover:text-cyan-600 transition-colors"
-                    disabled={editCommentId !== null}
-                  >
-                    Reply
-                  </button>
+                  isAuthenticated ? (
+                    <button
+                      onClick={() => setReplyToId(replyToId === comment.id ? null : comment.id)}
+                      className="text-sm text-slate-500 hover:text-cyan-600 transition-colors"
+                      disabled={editCommentId !== null}
+                    >
+                      Reply
+                    </button>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="text-sm text-slate-500 hover:text-cyan-600 transition-colors"
+                    >
+                      Sign in to Reply
+                    </Link>
+                  )
                 )}
-                {canEditComment(comment) && (
+                {canEditComment(comment) && isAuthenticated && (
                   <button
                     onClick={() => setEditCommentId(editCommentId === comment.id ? null : comment.id)}
                     className="text-sm text-slate-500 hover:text-green-600 transition-colors"
