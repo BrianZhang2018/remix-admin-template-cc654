@@ -9,6 +9,7 @@ import {
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useEffect } from "react";
 import './i18n';
+import { createI18nServer, resources } from './i18n.server';
 
 import styles from "~/styles/tailwind.css?url";
 
@@ -27,12 +28,25 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  // Expose environment variables to the client
+  // Get language from Accept-Language header or default to 'en'
+  const acceptLanguage = request.headers.get('accept-language') || '';
+  const lng = acceptLanguage.includes('zh') ? 'zh' : 'en';
+  
+  // Initialize i18n on server side
+  try {
+    await createI18nServer(lng);
+  } catch (error) {
+    console.error('Failed to initialize i18n server:', error);
+  }
+  
+  // Expose environment variables, language, and translations to the client
   return Response.json({
     ENV: {
       SUPABASE_URL: process.env.SUPABASE_URL || process.env.SUPABASE_DATABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     },
+    lng,
+    resources,
   });
 }
 
@@ -48,7 +62,7 @@ export default function App() {
         <Links />
         <script
           dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(data.ENV)}`,
+            __html: `window.ENV = ${JSON.stringify(data.ENV)}; window.LNG = ${JSON.stringify(data.lng)}; window.RESOURCES = ${JSON.stringify(data.resources)};`,
           }}
         />
       </head>
