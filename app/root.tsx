@@ -8,7 +8,6 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useEffect } from "react";
-import './i18n';
 import { createI18nServer, resources } from './i18n.server';
 
 import styles from "~/styles/tailwind.css?url";
@@ -28,6 +27,11 @@ export const links: LinksFunction = () => [
 ];
 
 export async function loader({ request }: LoaderFunctionArgs) {
+  // Server-side logging - this will appear in your terminal
+  console.log('🔍 SERVER-SIDE LOG: Root loader called');
+  console.log('🔍 SERVER-SIDE LOG: Request URL:', request.url);
+  console.log('🔍 SERVER-SIDE LOG: User Agent:', request.headers.get('user-agent'));
+  
   // Get language from Accept-Language header or default to 'en'
   const acceptLanguage = request.headers.get('accept-language') || '';
   const lng = acceptLanguage.includes('zh') ? 'zh' : 'en';
@@ -39,14 +43,13 @@ export async function loader({ request }: LoaderFunctionArgs) {
     console.error('Failed to initialize i18n server:', error);
   }
   
-  // Expose environment variables, language, and translations to the client
+  // Expose environment variables and language to the client
   return Response.json({
     ENV: {
       SUPABASE_URL: process.env.SUPABASE_URL || process.env.SUPABASE_DATABASE_URL,
       SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY,
     },
     lng,
-    resources,
   });
 }
 
@@ -60,16 +63,16 @@ export default function App() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `window.ENV = ${JSON.stringify(data.ENV)}; window.LNG = ${JSON.stringify(data.lng)}; window.RESOURCES = ${JSON.stringify(data.resources)};`,
-          }}
-        />
       </head>
       <body className="flex flex-col min-h-screen text-slate-700 bg-slate-100">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `window.ENV = ${JSON.stringify(data.ENV)}; window.LNG = ${JSON.stringify(data.lng)};`,
+          }}
+        />
       </body>
     </html>
   );
