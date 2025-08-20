@@ -41,34 +41,34 @@ export async function loader({ request }: LoaderFunctionArgs) {
 }
 
 export async function action({ request }: ActionFunctionArgs) {
-  // Require authentication to create posts
-  const user = await requireAuth(request);
-  
-  const formData = await request.formData();
-  const supabase = getSupabaseClient();
-
-  const title = formData.get("title") as string;
-  const content = formData.get("content") as string;
-  const excerpt = formData.get("excerpt") as string;
-  const categoryId = formData.get("category_id") as string;
-  const selectedTags = formData.getAll("tags") as string[];
-
-  // Validation
-  const errors: Record<string, string> = {};
-  
-  if (!title?.trim()) errors.title = "Title is required";
-  if (!content?.trim()) errors.content = "Content is required";
-  if (!categoryId) errors.category = "Category is required";
-
-  // Get user profile for display name
-  const userProfile = await getUserProfile(user.id);
-  const displayName = userProfile?.display_name || user.email?.split('@')[0] || 'Anonymous User';
-
-  if (Object.keys(errors).length > 0) {
-    return Response.json({ errors }, { status: 400 });
-  }
-
   try {
+    // Require authentication to create posts
+    const user = await requireAuth(request);
+    
+    const formData = await request.formData();
+    const supabase = getSupabaseClient();
+
+    const title = formData.get("title") as string;
+    const content = formData.get("content") as string;
+    const excerpt = formData.get("excerpt") as string;
+    const categoryId = formData.get("category_id") as string;
+    const selectedTags = formData.getAll("tags") as string[];
+
+    // Validation
+    const errors: Record<string, string> = {};
+    
+    if (!title?.trim()) errors.title = "Title is required";
+    if (!content?.trim()) errors.content = "Content is required";
+    if (!categoryId) errors.category = "Category is required";
+
+    // Get user profile for display name
+    const userProfile = await getUserProfile(user.id);
+    const displayName = userProfile?.display_name || user.email?.split('@')[0] || 'Anonymous User';
+
+    if (Object.keys(errors).length > 0) {
+      return Response.json({ errors }, { status: 400 });
+    }
+
     // Create the post with authenticated user data
     const { data: post, error: postError } = await supabase
       .from("posts")
@@ -86,7 +86,12 @@ export async function action({ request }: ActionFunctionArgs) {
       .single();
 
     if (postError) {
-      throw new Error(postError.message);
+      console.error("Supabase post creation error:", postError);
+      throw new Error(`Database error: ${postError.message}`);
+    }
+
+    if (!post) {
+      throw new Error("Post was not created successfully");
     }
 
     // Add tags if any selected
@@ -111,8 +116,19 @@ export async function action({ request }: ActionFunctionArgs) {
 
   } catch (error) {
     console.error("Error creating post:", error);
+    
+    // Provide more specific error messages
+    let errorMessage = "Failed to create post. Please try again.";
+    if (error instanceof Error) {
+      if (error.message.includes("Database error:")) {
+        errorMessage = "Database connection issue. Please try again later.";
+      } else if (error.message.includes("auth")) {
+        errorMessage = "Authentication error. Please log in again.";
+      }
+    }
+    
     return Response.json(
-      { errors: { general: "Failed to create post. Please try again." } },
+      { errors: { general: errorMessage } },
       { status: 500 }
     );
   }

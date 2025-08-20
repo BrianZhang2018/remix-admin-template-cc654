@@ -65,7 +65,7 @@ export default function ForumHomepage() {
   return (
     <>
       {/* Header */}
-      <header className="bg-gradient-to-r from-cyan-500 to-blue-600 text-white">
+      <header className="bg-gradient-to-r from-slate-900 via-purple-900 to-slate-900 text-white">
         <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex items-center justify-between mb-6">
             <Logo />

@@ -2,7 +2,7 @@ import type { MetaFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { requireAuth, getUserProfile } from "~/utils/auth.server";
 import { formatDate } from "~/utils/formatDate";
-import { getInitials } from "~/utils/getInitials";
+
 
 export const meta: MetaFunction = () => {
   return [
@@ -35,10 +35,7 @@ export default function UserProfile() {
       </h1>
       <div className="flex flex-col overflow-hidden bg-white shadow-md rounded-xl md:flex-row">
         <div className="flex flex-col w-full px-8 py-10 bg-slate-50 md:basis-1/3 md:items-center lg:py-12">
-          <div className="w-20 h-20 lg:w-28 lg:h-28 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center text-white text-xl lg:text-2xl font-bold ring-2 ring-cyan-300">
-            {getInitials(displayName)}
-          </div>
-          <div className="mt-4 text-center">
+          <div className="text-center">
             <p className="font-medium text-slate-900">{displayName}</p>
             <p className="text-sm text-slate-500">Forum Member</p>
           </div>
