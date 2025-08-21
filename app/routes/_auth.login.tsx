@@ -4,13 +4,14 @@ import type {
   MetaFunction,
 } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
-import { Form, Link, useActionData, useNavigation } from "@remix-run/react";
+import { Form, Link, useActionData, useNavigation, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
 import { commitSession, getSession } from "~/session.server";
 
 import Button from "~/components/Button";
 import TextField from "~/components/TextField";
+import GoogleAuthButton from "~/components/GoogleAuthButton";
 import { getSupabaseClient } from "~/utils/getSupabaseClient";
 
 export const meta: MetaFunction = () => {
@@ -61,12 +62,17 @@ export async function loader({ request }: LoaderFunctionArgs) {
     return redirect("/dashboard");
   }
 
-  return Response.json({});
+  // Check for OAuth errors
+  const url = new URL(request.url);
+  const error = url.searchParams.get('error');
+
+  return Response.json({ error });
 }
 
 export default function LogIn() {
   const actionData = useActionData<{ error?: string }>();
   const navigation = useNavigation();
+  const { error: oauthError } = useLoaderData<{ error?: string }>();
   const { t } = useTranslation();
 
   const isSubmitting = navigation.state === "submitting";
@@ -92,9 +98,9 @@ export default function LogIn() {
         </div>
       </div>
       <Form method="POST">
-        {actionData?.error && (
+        {(actionData?.error || oauthError) && (
           <p className="p-3 mb-4 text-sm rounded-md bg-rose-50 text-rose-700">
-            {actionData.error}
+            {actionData?.error || oauthError}
           </p>
         )}
         <fieldset
@@ -126,7 +132,21 @@ export default function LogIn() {
           <Button type="submit" className="w-full" loading={isSubmitting}>
             {t('auth.signIn')}
           </Button>
-          <p className="text-sm text-center">
+          
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-slate-500">{t('auth.or')}</span>
+            </div>
+          </div>
+
+          {/* Google OAuth Button */}
+          <GoogleAuthButton mode="login" />
+          
+          <p className="text-sm text-center mt-6">
 {t('auth.newToForum')}{" "}
             <Link className="underline text-cyan-600" to="/signup">
               {t('auth.createAccount')}

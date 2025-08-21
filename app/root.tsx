@@ -6,6 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
+
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useEffect } from "react";
 import { createI18nServer, resources } from './i18n.server';

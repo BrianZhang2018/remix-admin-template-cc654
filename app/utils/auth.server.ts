@@ -24,14 +24,30 @@ export async function getOptionalUser(request: Request) {
   const session = await getSession(request.headers.get("Cookie"));
   const token = session.get("__session");
   
+  console.log('getOptionalUser called:', {
+    hasSession: !!session,
+    hasToken: !!token,
+    tokenLength: token?.length,
+    cookies: request.headers.get("Cookie")?.substring(0, 100) + '...'
+  });
+  
   if (!token) {
+    console.log('No token found in session');
     return null;
   }
   
   const supabase = getSupabaseClient();
   const { data: { user }, error } = await supabase.auth.getUser(token);
   
+  console.log('Supabase getUser result:', {
+    hasUser: !!user,
+    hasError: !!error,
+    errorMessage: error?.message,
+    userEmail: user?.email
+  });
+  
   if (error || !user) {
+    console.log('User validation failed:', error?.message);
     return null;
   }
   

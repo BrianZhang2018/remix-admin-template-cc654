@@ -11,6 +11,7 @@ import { commitSession, getSession } from "~/session.server";
 
 import Button from "~/components/Button";
 import TextField from "~/components/TextField";
+import GoogleAuthButton from "~/components/GoogleAuthButton";
 import { getSupabaseClient } from "~/utils/getSupabaseClient";
 
 export const meta: MetaFunction = () => {
@@ -156,6 +157,19 @@ export default function SignUp() {
           <Button type="submit" className="w-full" loading={isSubmitting}>
             Sign Up
           </Button>
+          
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-300" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-white text-slate-500">or</span>
+            </div>
+          </div>
+
+          {/* Google OAuth Button */}
+          <GoogleAuthButton mode="signup" />
         </fieldset>
       </Form>
     </div>
