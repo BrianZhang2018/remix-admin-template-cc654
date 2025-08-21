@@ -14,18 +14,13 @@
     "test:auth": "node tests/e2e-auth-requirements.test.cjs",
     "test:auth:prod": "BASE_URL=https://your-forum.netlify.app node tests/e2e-auth-requirements.test.cjs",
     "test:auth-user": "node tests/e2e-authenticated-user.test.cjs",
-    "test:all": "npm run test:e2e && npm run test:auth && npm run test:auth-user",
-    "test:enhanced-oauth": "playwright test tests/auth-enhancement.test.js",
-    "test:auth-security": "playwright test tests/unit/auth-security.test.js",
-    "test:logout": "playwright test tests/logout.test.js",
-    "test:enhanced": "npm run test:enhanced-oauth && npm run test:auth-security && npm run test:logout"
+    "test:all": "npm run test:e2e && npm run test:auth && npm run test:auth-user"
   },
   "dependencies": {
     "@netlify/remix-adapter": "^2.6.0",
     "@remix-run/node": "^2.15.3",
     "@remix-run/react": "^2.15.3",
     "@remix-run/serve": "^2.16.4",
-    "@supabase/auth-helpers-remix": "^0.4.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.48.1",
     "i18next": "^25.3.6",

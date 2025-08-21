@@ -20,7 +20,7 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   
   // Get current user (optional for viewing, but needed for commenting)
   const user = await getOptionalUser(request);
-  const userProfile = user ? await getUserProfile(user.id, request) : null;
+  const userProfile = user ? await getUserProfile(user.id) : null;
 
   // Fetch post with basic data first
   const { data: post, error: postError } = await supabase
@@ -149,7 +149,7 @@ export async function action({ request, params }: ActionFunctionArgs) {
     }
 
     // Get user profile for display name
-    const userProfile = await getUserProfile(user.id, request);
+    const userProfile = await getUserProfile(user.id);
     const displayName = userProfile?.display_name || user.email?.split('@')[0] || 'Anonymous User';
 
     try {

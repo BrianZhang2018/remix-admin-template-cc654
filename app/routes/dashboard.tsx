@@ -11,17 +11,14 @@ import { getSupabaseClient } from "~/utils/getSupabaseClient";
 import { requireAuth } from "~/utils/auth.server";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  console.log('🔍 DASHBOARD LOADER: Request URL:', request.url);
   try {
     getSupabaseClient();
   } catch (error) {
-    console.log('🔍 DASHBOARD LOADER: Supabase client error, redirecting to /');
     return redirect("/");
   }
 
   // Require authentication and get user data
   const user = await requireAuth(request);
-  console.log('🔍 DASHBOARD LOADER: User authenticated:', user?.email);
 
   return Response.json({ user });
 }

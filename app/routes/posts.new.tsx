@@ -30,7 +30,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 
   // Fetch user profile
-  const userProfile = await getUserProfile(user.id, request);
+  const userProfile = await getUserProfile(user.id);
 
   return Response.json({
     categories: categoriesResult.data || [],
@@ -62,7 +62,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!categoryId) errors.category = "Category is required";
 
     // Get user profile for display name
-    const userProfile = await getUserProfile(user.id, request);
+    const userProfile = await getUserProfile(user.id);
     const displayName = userProfile?.display_name || user.email?.split('@')[0] || 'Anonymous User';
 
     if (Object.keys(errors).length > 0) {

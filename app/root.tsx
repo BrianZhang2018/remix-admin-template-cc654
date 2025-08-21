@@ -6,7 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
 } from "@remix-run/react";
-import OAuthHandler from "~/components/OAuthHandler";
+
 import type { LinksFunction, LoaderFunctionArgs } from "@remix-run/node";
 import { useEffect } from "react";
 import { createI18nServer, resources } from './i18n.server';
@@ -66,7 +66,6 @@ export default function App() {
         <Links />
       </head>
       <body className="flex flex-col min-h-screen text-slate-700 bg-slate-100">
-        <OAuthHandler />
         <Outlet />
         <ScrollRestoration />
         <Scripts />

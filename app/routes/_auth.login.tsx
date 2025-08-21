@@ -7,10 +7,12 @@ import { redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
+import { commitSession, getSession } from "~/session.server";
+
 import Button from "~/components/Button";
 import TextField from "~/components/TextField";
 import GoogleAuthButton from "~/components/GoogleAuthButton";
-import { getSupabaseServerClient } from "~/utils/supabase.server";
+import { getSupabaseClient } from "~/utils/getSupabaseClient";
 
 export const meta: MetaFunction = () => {
   return [
@@ -32,9 +34,7 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  const response = new Response();
-  const supabase = getSupabaseServerClient(request, response);
-  
+  const supabase = getSupabaseClient();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -44,26 +44,29 @@ export async function action({ request }: ActionFunctionArgs) {
     return Response.json({ error: error.message }, { status: 400 });
   }
 
+  const session = await getSession(request.headers.get("Cookie"));
+  session.set("__session", data.session.access_token);
+
   return redirect("/dashboard", {
-    headers: response.headers,
+    headers: {
+      "Set-Cookie": await commitSession(session),
+    },
   });
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const response = new Response();
-  const supabase = getSupabaseServerClient(request, response);
-  
-  const { data: { user } } = await supabase.auth.getUser();
+  const session = await getSession(request.headers.get("Cookie"));
+  const token = session.get("__session");
 
-  if (user) {
-    return redirect("/dashboard", { headers: response.headers });
+  if (token) {
+    return redirect("/dashboard");
   }
 
   // Check for OAuth errors
   const url = new URL(request.url);
   const error = url.searchParams.get('error');
 
-  return Response.json({ error }, { headers: response.headers });
+  return Response.json({ error });
 }
 
 export default function LogIn() {

@@ -6,16 +6,17 @@ import { useTranslation } from "react-i18next";
 import Logo from "~/components/Logo";
 import PostCard from "~/components/forum/PostCard";
 import LanguageSwitcher from "~/components/LanguageSwitcher";
-import { getSupabaseClient } from "~/utils/getSupabaseClient";
+import { createServerSupabaseClient } from "~/utils/supabase.server";
 import { getOptionalUser } from "~/utils/auth.server";
 import { getTranslatedCategoryName, getTranslatedCategoryDescription } from "~/utils/categoryTranslations";
 import type { Post, Category } from "~/types/forum";
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const supabase = getSupabaseClient();
+  const response = new Response();
+  const supabase = createServerSupabaseClient(request, response);
   
-  // Check if user is authenticated
-  const user = await getOptionalUser(request);
+  // Get the user from the session
+  const { data: { user }, error } = await supabase.auth.getUser();
   
   // Fetch featured/pinned posts and categories
   const [postsResult, categoriesResult] = await Promise.all([
@@ -49,7 +50,9 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
   const categories: Category[] = categoriesResult.data;
 
-  return Response.json({ posts, categories, user });
+  return Response.json({ posts, categories, user }, {
+    headers: response.headers,
+  });
 }
 
 export const meta: MetaFunction = () => {
