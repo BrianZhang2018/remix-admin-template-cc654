@@ -7,12 +7,10 @@ import { redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useNavigation, useLoaderData } from "@remix-run/react";
 import { useTranslation } from "react-i18next";
 
-import { commitSession, getSession } from "~/session.server";
-
 import Button from "~/components/Button";
 import TextField from "~/components/TextField";
 import GoogleAuthButton from "~/components/GoogleAuthButton";
-import { getSupabaseClient } from "~/utils/getSupabaseClient";
+import { getSupabaseServerClient } from "~/utils/supabase.server";
 
 export const meta: MetaFunction = () => {
   return [
@@ -34,7 +32,9 @@ export async function action({ request }: ActionFunctionArgs) {
     );
   }
 
-  const supabase = getSupabaseClient();
+  const response = new Response();
+  const supabase = getSupabaseServerClient(request, response);
+  
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -44,29 +44,26 @@ export async function action({ request }: ActionFunctionArgs) {
     return Response.json({ error: error.message }, { status: 400 });
   }
 
-  const session = await getSession(request.headers.get("Cookie"));
-  session.set("__session", data.session.access_token);
-
   return redirect("/dashboard", {
-    headers: {
-      "Set-Cookie": await commitSession(session),
-    },
+    headers: response.headers,
   });
 }
 
 export async function loader({ request }: LoaderFunctionArgs) {
-  const session = await getSession(request.headers.get("Cookie"));
-  const token = session.get("__session");
+  const response = new Response();
+  const supabase = getSupabaseServerClient(request, response);
+  
+  const { data: { user } } = await supabase.auth.getUser();
 
-  if (token) {
-    return redirect("/dashboard");
+  if (user) {
+    return redirect("/dashboard", { headers: response.headers });
   }
 
   // Check for OAuth errors
   const url = new URL(request.url);
   const error = url.searchParams.get('error');
 
-  return Response.json({ error });
+  return Response.json({ error }, { headers: response.headers });
 }
 
 export default function LogIn() {

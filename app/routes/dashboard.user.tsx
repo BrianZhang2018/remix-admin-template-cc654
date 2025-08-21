@@ -14,7 +14,7 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireAuth(request);
-  const userProfile = await getUserProfile(user.id);
+  const userProfile = await getUserProfile(user.id, request);
   
   return Response.json({ user, userProfile });
 }

@@ -6,7 +6,7 @@ import PostCard from "~/components/forum/PostCard";
 import { GlobalErrorBoundary } from "~/components/GlobalErrorBoundary";
 import { formatDate } from "~/utils/formatDate";
 import { getInitials } from "~/utils/getInitials";
-import { getSupabaseClient } from "~/utils/getSupabaseClient";
+import { getSupabaseServerClient } from "~/utils/supabase.server";
 import { requireAuth, getUserProfile } from "~/utils/auth.server";
 import type { Post, Comment } from "~/types/forum";
 
@@ -37,8 +37,9 @@ export const meta: MetaFunction = () => {
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const user = await requireAuth(request);
-  const userProfile = await getUserProfile(user.id);
-  const supabase = getSupabaseClient();
+  const userProfile = await getUserProfile(user.id, request);
+  const response = new Response();
+  const supabase = getSupabaseServerClient(request, response);
 
   // Get user's posts with category and tag data
   const { data: userPosts, error: postsError } = await supabase
@@ -172,6 +173,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
     recentPosts: transformedPosts,
     recentComments: userComments,
     achievements
+  }, {
+    headers: response.headers,
   });
 }
 
