@@ -143,6 +143,16 @@
     "commentUpdated": "评论更新成功！",
     "commentDeleted": "评论删除成功！"
   },
+  "share": {
+    "share": "分享",
+    "sharePost": "分享帖子",
+    "postLink": "帖子链接",
+    "copy": "复制",
+    "copied": "已复制！",
+    "shareOn": "分享到",
+    "copyLink": "复制链接",
+    "socialShare": "社交媒体"
+  },
   "common": {
     "loading": "加载中...",
     "error": "错误",

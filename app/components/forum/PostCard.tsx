@@ -5,6 +5,7 @@ import { formatDate } from "~/utils/formatDate";
 import { getInitials } from "~/utils/getInitials";
 import { getTranslatedCategoryName } from "~/utils/categoryTranslations";
 import VoteButtons from "./VoteButtons";
+import ShareButton from "./ShareButton";
 
 export default function PostCard({ 
   post, 
@@ -175,6 +176,12 @@ export default function PostCard({
                 </svg>
                 <span>{post.views_count}</span>
               </span>
+
+              <ShareButton
+                postId={post.id}
+                postTitle={post.title}
+                postExcerpt={post.excerpt}
+              />
             </div>
           </div>
         </div>

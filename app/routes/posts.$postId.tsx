@@ -8,6 +8,7 @@ import CommentThread from "~/components/forum/CommentThread";
 import Button from "~/components/Button";
 import TextField from "~/components/TextField";
 import VoteButtons from "~/components/forum/VoteButtons";
+import ShareButton from "~/components/forum/ShareButton";
 import { getSupabaseClient } from "~/utils/getSupabaseClient";
 import { getOptionalUser, getUserProfile, requireAuth } from "~/utils/auth.server";
 import { formatDate } from "~/utils/formatDate";
@@ -97,12 +98,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   });
 
   // Increment view count (fire and forget)
-  supabase
+  void supabase
     .from("posts")
     .update({ views_count: postWithRelations.views_count + 1 })
-    .eq("id", params.postId)
-    .then(() => {})
-    .catch(() => {});
+    .eq("id", params.postId);
 
   return Response.json({ 
     post: transformedPost, 
@@ -504,7 +503,7 @@ export default function PostDetail() {
               {/* Tags */}
               {post.tags && post.tags.length > 0 && (
                 <div className="flex flex-wrap gap-2 mb-6">
-                  {post.tags.map((tag) => (
+                  {post.tags.map((tag: any) => (
                     <Link
                       key={tag.id}
                       to={`/tags/${tag.slug}`}
@@ -522,7 +521,7 @@ export default function PostDetail() {
           {/* Post Content */}
           {!isEditingPost && (
             <div className="prose prose-slate max-w-none">
-              {post.content.split('\n').map((paragraph, index) => (
+              {post.content.split('\n').map((paragraph: string, index: number) => (
                 <p key={index} className="mb-4 last:mb-0">
                   {paragraph}
                 </p>
@@ -548,6 +547,13 @@ export default function PostDetail() {
                 {isEditingPost ? 'Cancel Edit' : 'Edit Post'}
               </button>
             )}
+            <ShareButton
+              postId={post.id}
+              postTitle={post.title}
+              postExcerpt={post.excerpt}
+              showLabel={true}
+              className="text-sm"
+            />
             <button className="text-sm text-slate-500 hover:text-red-600">
               Report
             </button>

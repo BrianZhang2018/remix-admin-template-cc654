@@ -143,6 +143,16 @@
     "commentUpdated": "Comment updated successfully!",
     "commentDeleted": "Comment deleted successfully!"
   },
+  "share": {
+    "share": "Share",
+    "sharePost": "Share post",
+    "postLink": "Post Link",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "shareOn": "Share on",
+    "copyLink": "Copy Link",
+    "socialShare": "Social Media"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",
